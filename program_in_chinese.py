@@ -118,11 +118,11 @@ with open(filename, "w") as f:
     f.write("import scipy as sp\n")
     while True:
         s = input(">> ")
-        if s == "execute":
-            break
+        if s == "開始":
+            exec(open(filename).read())
         s = correct(s)
         print(s)
         f.write(s)
 
-exec(open(filename).read())
+
 #os.system('code.py')
