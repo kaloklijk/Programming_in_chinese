@@ -21,7 +21,8 @@ def correct(s):
     count = 0
     # for ending a loop
     if s == "":
-        loops = loops-1
+        if loops > 0:
+            loops = loops-1
         s = "\n"
         return s
     # for fixing s for the orrection
@@ -99,7 +100,8 @@ def correct(s):
         loops = loops + 1
         count = 1
     if s[0] == "}":
-        loops = loops - 1
+        if loops > 0:
+            loops = loops - 1
     ## automatically indentation within loopings, can end the loop using 完
     for i in np.arange(count, loops):
         s = "    "+s
@@ -112,73 +114,54 @@ def translation(s):
     '''
     this function is for translating the coding string from english into chinese
     '''
-    for a in s:
-        for i, string in enumerate(s):
-            s = s+"                "
-            # if
-            if len(s)>=2:
-                if s[i]+s[i+1] == "if":
-                    s = s[:i]+"如果"+s[i+2:]
-            # def
-            if len(s)>=4:
-                if s[i]+s[i+1]+s[i+2] == "def":
-                    s = s[:i]+"定義"+s[i+3:]
-            # break
-            if s[i:] == "break":
-                s = s[:i]+"中斷"
-            # continue
-            if s[i:] == "continue":
-                s = s[:i]+"繼續"
-            # for
-            if len(s)>=4:
-                if s[i]+s[i+1]+s[i+2] == "for":
-                    s = s[:i]+"選"+s[i+3:]
-            
-                if s[i:i+13] == "in np.arange(" or s[i:i+9] == "in range(":
-                    s = s[:i]+"從"+s[i+14:]
-                    for j, stri in enumerate(s[i+1:]):
-                        if s[j] == ")":
-                            s = s[:j]+s[j+1:]
-                        if s[j] == ",":
-                            s = s[:j]+"到"+s[j+1:]
-                if s[i]+s[i+1] == "in":
-                    s = s[:i]+"從"+s[i+2:]
-            # while
-            if len(s)>=5:
-                if s[i:i+5] == "while":
-                    s = s[:i]+"每當"+s[i+6:]
-            # in
-            if len(s)>=2:
-                if s[i]+s[i+1] == "in":
-                    s = s[:i]+"從"+s[i+2:]
-            # class
-            if len(s)>=5:
-                if s[i:i+5] == "class":
-                    s == s[:i]+"範疇"+s[i+2:]
-            # True/False
-            if len(s)>=4:
-                if s[i:i+4] == "True":
-                    s = s[:i]+"對"+s[i+5:]
-                if s[i:i+5] == "False":
-                    s = s[:i]+"錯"+s[i+6:]
-            # print
-            if len(s)>=6:
-                if s[i:i+8] == "print(f\"":
-                    s = s[:i]+"說"+s[i+9]
-                    for j, stri in enumerate(s[i+1:]):
-                        if s[j]+s[j+1] == "\")":
-                            s = s[:j]
-                if s[i:i+7] == "print(\"":
-                    s = s[:i]+"說"+s[i+8]
-                    for j, stri in enumerate(s[i+1:]):
-                        if s[j]+s[j+1] == "\")":
-                            s = s[:j]            
+    # if
+    s.replace("if", "如果")
+    # def
+    s.replace("def", "定義")
+    # break
+    s.replace("break", "中斷")
+    # continue
+    s.replace("continue", "繼續")
+    # while
+    s.replace("while ", "每當")
+    # in
+    s.replace(" in ", "從")
+    # class
+    s.replace("class ", "範疇")
+    # True/False
+    s.replace("True", "對")
+    s.replace("False", "錯")
+    # import
+    s.replace("import", "匯入")
+    ## 
+    for i, string in enumerate(s):
+        l = len(s)
+
+        # for
+        if i+4<l:
+            if s[i]+s[i+1]+s[i+2] == "for":
+                s = s[:i]+"選"+s[i+3:]
+        
+            if s[i:i+13] == "in np.arange(" or s[i:i+9] == "in range(":
+                s = s[:i]+"從"+s[i+13:]
+                for j, stri in enumerate(s[i:]):
+                    if s[j] == ")":
+                        s = s[:j]+s[j+1:]
+                    if s[j] == ",":
+                        s = s[:j]+"到"+s[j+1:]
+                    if s[j] == ")":
+                        s = s[:j]+s[j+1:]
+        # print
+        if "print(" in s:
+            s.replace("print(\"", "說")
+            s.replace("print(f\"", "說")
+            s.replace("\")", "")
     return s
         
 filename = input("please input the file name\n")
 if filename[-3:] != ".py":
     filename = filename+".py"
-with open(filename, "r+") as f:
+with open(filename, "w+") as f:
     f.write("import sys\n")
     f.write("import matplotlib as plt\n")
     f.write("import numpy as np\n")
@@ -186,15 +169,20 @@ with open(filename, "r+") as f:
     while True:
         s = input(">> ")
         if s == "開始":
+            f.seek(0)
             exec(open(filename).read())
+            continue
         if s == "翻譯":
+            f.seek(0)
             while True:
                 # get line by line
                 line = f.readline()
                 if not line:
                     break
-                line = translation(line)
+                line = translation(str(line))
                 print(line)
+            continue
         s = correct(s)
         print(s)
         f.write(s)
+
