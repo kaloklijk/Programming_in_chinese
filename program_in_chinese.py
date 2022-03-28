@@ -16,15 +16,17 @@ def correct(s):
     '''
     for translating the chinese programming language into python
     '''
-    
     global loops
     # extra variables for indentation for loopings
     count = 0
     # for ending a loop
-    if s == "完":
+    if s == "":
         loops = loops-1
         s = "\n"
         return s
+    # for fixing s for the orrection
+    if len(s) < 2:
+        s = s+"  "
     # intially dedent all whitespaces in s
     s = dedent(s)
     # print function with varialbes in {}, format: 說a={a}, print(f"a={a}")
@@ -78,6 +80,26 @@ def correct(s):
         s = "break"
     if s[0]+s[1] == "繼續":
         s = "continue"
+    # class
+    if s[0]+s[1] == "範疇":
+        loops = loops + 1
+        count = 1
+        s = "class " + s[2:]
+        if s[-1] != ":":
+            s = s+":"
+    # def
+    if s[0]+s[1] == "定義":
+        loops = loops + 1
+        count = 1
+        s = "def " + s[2:]
+        if s[-1] != ":":
+            s = s+":"
+    # bracket
+    if s[-1] == "{":
+        loops = loops + 1
+        count = 1
+    if s[0] == "}":
+        loops = loops - 1
     ## automatically indentation within loopings, can end the loop using 完
     for i in np.arange(count, loops):
         s = "    "+s
@@ -86,8 +108,10 @@ def correct(s):
     ## return input s
     return s
 
-
-with open("code.py", "w") as f:
+filename = input("please input the file name\n")
+if filename[-3:] != ".py":
+    filename = filename+".py"
+with open(filename, "w") as f:
     f.write("import sys\n")
     f.write("import matplotlib as plt\n")
     f.write("import numpy as np\n")
@@ -100,5 +124,5 @@ with open("code.py", "w") as f:
         print(s)
         f.write(s)
 
-exec(open('code.py').read())
+exec(open(filename).read())
 #os.system('code.py')
