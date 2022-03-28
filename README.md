@@ -5,16 +5,16 @@ this project is to allow users to do programming in chinese, it will be automati
 for example, 
 
 ```diff
-@@ 說什麼 --> print(f"什麼")
-## 從1到50選j --> for j in numpy.arange(1, 50):
-@@ 定義hello(a) --> def hello(a):
+ 說什麼 --> print(f"什麼")
+ 從1到50選j --> for j in numpy.arange(1, 50):
+ 定義hello(a) --> def hello(a):
 
 ```
 
 some special function:
 
 ```diff
-@@ 翻譯: translate coding languages back to chinese
+## 翻譯: translate coding languages back to chinese
 開始: run the program
 ```
 have fun!
